@@ -1,0 +1,788 @@
+/* =========================================================
+   MÓDULO DE GESTÃO DE ATRASOS
+========================================================= */
+
+.atraso-module {
+    --atraso-primary: #102a43;
+    --atraso-primary-dark: #0a1d2e;
+    --atraso-accent: #c9a227;
+    --atraso-bg: #f4f6f8;
+    --atraso-card: #ffffff;
+    --atraso-text: #17202a;
+    --atraso-muted: #6b7280;
+    --atraso-border: #dfe4ea;
+    --atraso-danger: #b42318;
+    --atraso-danger-bg: #fff1f0;
+    --atraso-success: #18794e;
+    --atraso-success-bg: #ecfdf3;
+    --atraso-warning: #a15c00;
+    --atraso-warning-bg: #fff7e6;
+
+    background: var(--atraso-bg);
+    color: var(--atraso-text);
+    padding: 24px;
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+.atraso-module *,
+.atraso-module *::before,
+.atraso-module *::after {
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.atraso-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.atraso-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--atraso-accent);
+    margin-bottom: 5px;
+}
+
+.atraso-header h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.atraso-header p {
+    margin: 6px 0 0;
+    color: var(--atraso-muted);
+}
+
+.atraso-header-user {
+    background: var(--atraso-primary);
+    color: white;
+    border-radius: 12px;
+    padding: 12px 16px;
+    min-width: 180px;
+}
+
+.atraso-header-user strong,
+.atraso-header-user span {
+    display: block;
+}
+
+.atraso-header-user strong {
+    font-size: 14px;
+}
+
+.atraso-header-user span {
+    margin-top: 3px;
+    font-size: 12px;
+    opacity: .8;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.atraso-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--atraso-border);
+}
+
+.atraso-tab {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 13px 16px;
+    color: var(--atraso-muted);
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+}
+
+.atraso-tab:hover {
+    color: var(--atraso-primary);
+}
+
+.atraso-tab.active {
+    color: var(--atraso-primary);
+    border-bottom-color: var(--atraso-accent);
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.atraso-panel {
+    display: none;
+}
+
+.atraso-panel.active {
+    display: block;
+}
+
+.atraso-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+
+.atraso-section-title h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.atraso-section-title p {
+    color: var(--atraso-muted);
+    margin: 5px 0 0;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.atraso-card {
+    background: var(--atraso-card);
+    border: 1px solid var(--atraso-border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.035);
+}
+
+.atraso-card h3 {
+    margin: 0 0 18px;
+}
+
+
+/* =========================================================
+   FORMULÁRIOS
+========================================================= */
+
+.atraso-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.atraso-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.atraso-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 16px;
+}
+
+.atraso-field label {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.atraso-field input,
+.atraso-field select,
+.atraso-field textarea {
+    width: 100%;
+    border: 1px solid var(--atraso-border);
+    background: #fff;
+    color: var(--atraso-text);
+    border-radius: 9px;
+    padding: 11px 12px;
+    font: inherit;
+    outline: none;
+    transition: .15s ease;
+}
+
+.atraso-field textarea {
+    resize: vertical;
+    min-height: 180px;
+    line-height: 1.5;
+}
+
+.atraso-field input:focus,
+.atraso-field select:focus,
+.atraso-field textarea:focus {
+    border-color: var(--atraso-primary);
+    box-shadow: 0 0 0 3px rgba(16,42,67,.1);
+}
+
+.atraso-field small {
+    color: var(--atraso-muted);
+}
+
+.atraso-checkbox-field {
+    margin-top: 5px;
+}
+
+.atraso-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.atraso-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* =========================================================
+   BOTÕES
+========================================================= */
+
+.atraso-btn {
+    appearance: none;
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 16px;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+    transition: transform .12s ease, opacity .12s ease;
+}
+
+.atraso-btn:hover {
+    opacity: .92;
+}
+
+.atraso-btn:active {
+    transform: translateY(1px);
+}
+
+.atraso-btn-primary {
+    background: var(--atraso-primary);
+    color: white;
+}
+
+.atraso-btn-secondary {
+    background: #eef1f4;
+    color: var(--atraso-primary);
+}
+
+.atraso-btn-danger {
+    background: var(--atraso-danger);
+    color: white;
+}
+
+.atraso-btn-small {
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.atraso-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   ALUNO SELECIONADO
+========================================================= */
+
+.atraso-selected-student {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background: #edf5fb;
+    border: 1px solid #c7dceb;
+    border-radius: 10px;
+    padding: 13px;
+    margin: 10px 0 18px;
+}
+
+.atraso-selected-student > div span,
+.atraso-selected-student > div strong {
+    display: block;
+}
+
+.atraso-selected-student span {
+    color: var(--atraso-muted);
+    font-size: 11px;
+}
+
+.atraso-selected-student strong {
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   LISTA DE ALUNOS
+========================================================= */
+
+.atraso-student-results {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.atraso-student-option {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--atraso-border);
+    background: white;
+    border-radius: 9px;
+    padding: 11px 13px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.atraso-student-option:hover {
+    border-color: var(--atraso-primary);
+    background: #f7fafc;
+}
+
+.atraso-student-option.alerta {
+    border-color: #e2a800;
+    background: var(--atraso-warning-bg);
+}
+
+.atraso-student-option strong {
+    display: block;
+}
+
+.atraso-student-option small {
+    color: var(--atraso-muted);
+}
+
+.atraso-student-count {
+    border-radius: 20px;
+    background: #edf1f4;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.atraso-student-option.alerta .atraso-student-count {
+    background: #ffe0a3;
+    color: #704400;
+}
+
+
+/* =========================================================
+   BUSCA
+========================================================= */
+
+.atraso-inline-search {
+    display: flex;
+    gap: 8px;
+}
+
+.atraso-inline-search input {
+    flex: 1;
+}
+
+.atraso-search-result {
+    margin-top: 15px;
+}
+
+
+/* =========================================================
+   ESTATÍSTICAS
+========================================================= */
+
+.atraso-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.atraso-stat-card {
+    background: white;
+    border: 1px solid var(--atraso-border);
+    border-radius: 13px;
+    padding: 17px;
+}
+
+.atraso-stat-card span,
+.atraso-stat-card strong {
+    display: block;
+}
+
+.atraso-stat-card span {
+    color: var(--atraso-muted);
+    font-size: 12px;
+}
+
+.atraso-stat-card strong {
+    margin-top: 5px;
+    font-size: 27px;
+}
+
+
+/* =========================================================
+   TABELA
+========================================================= */
+
+.atraso-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.atraso-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+.atraso-table th,
+.atraso-table td {
+    border-bottom: 1px solid var(--atraso-border);
+    padding: 12px 10px;
+    text-align: left;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.atraso-table th {
+    background: #f7f8fa;
+    color: var(--atraso-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.atraso-table tr.atraso-alerta {
+    background: var(--atraso-danger-bg);
+}
+
+.atraso-id {
+    font-family: monospace;
+    font-weight: 800;
+    color: var(--atraso-primary);
+}
+
+.atraso-status {
+    display: inline-flex;
+    border-radius: 20px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.atraso-status.justificado {
+    background: var(--atraso-success-bg);
+    color: var(--atraso-success);
+}
+
+.atraso-status.nao-justificado {
+    background: var(--atraso-danger-bg);
+    color: var(--atraso-danger);
+}
+
+
+/* =========================================================
+   USUÁRIOS
+========================================================= */
+
+.atraso-user-list {
+    display: grid;
+    gap: 10px;
+}
+
+.atraso-user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid var(--atraso-border);
+    border-radius: 10px;
+    padding: 13px;
+}
+
+.atraso-user-info strong,
+.atraso-user-info span {
+    display: block;
+}
+
+.atraso-user-info span {
+    color: var(--atraso-muted);
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.atraso-role-badge {
+    display: inline-block;
+    border-radius: 20px;
+    padding: 5px 9px;
+    background: #edf1f4;
+    color: var(--atraso-primary);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   TURMAS
+========================================================= */
+
+.atraso-turma-item {
+    border: 1px solid var(--atraso-border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: white;
+}
+
+.atraso-turma-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 15px;
+    background: #f7f8fa;
+}
+
+.atraso-turma-header strong {
+    font-size: 15px;
+}
+
+.atraso-aluno-admin-row {
+    display: grid;
+    grid-template-columns: 55px 1fr 170px auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 15px;
+    border-top: 1px solid var(--atraso-border);
+}
+
+.atraso-chamada {
+    font-weight: 800;
+    color: var(--atraso-primary);
+}
+
+.atraso-aluno-admin-row select {
+    border: 1px solid var(--atraso-border);
+    border-radius: 7px;
+    padding: 7px;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.atraso-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0,0,0,.5);
+}
+
+.atraso-modal.open {
+    display: flex;
+}
+
+.atraso-modal-content {
+    width: min(900px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    padding: 22px;
+}
+
+.atraso-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.atraso-modal-header span {
+    color: var(--atraso-muted);
+    font-size: 12px;
+}
+
+.atraso-modal-header h2 {
+    margin: 4px 0 0;
+}
+
+.atraso-modal-close {
+    width: 35px;
+    height: 35px;
+    border: 0;
+    border-radius: 50%;
+    background: #eef1f4;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.atraso-toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 100000;
+    max-width: 360px;
+    background: #17202a;
+    color: white;
+    padding: 13px 16px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    transform: translateY(30px);
+    opacity: 0;
+    pointer-events: none;
+    transition: .2s ease;
+}
+
+.atraso-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.atraso-toast.success {
+    background: var(--atraso-success);
+}
+
+.atraso-toast.error {
+    background: var(--atraso-danger);
+}
+
+
+/* =========================================================
+   UTILITÁRIOS
+========================================================= */
+
+.hidden {
+    display: none !important;
+}
+
+.atraso-empty {
+    text-align: center;
+    color: var(--atraso-muted);
+    padding: 25px 15px;
+}
+
+.atraso-danger-text {
+    color: var(--atraso-danger);
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .atraso-module {
+        padding: 15px;
+    }
+
+    .atraso-header,
+    .atraso-section-title {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .atraso-header-user {
+        width: 100%;
+    }
+
+    .atraso-grid-2,
+    .atraso-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .atraso-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .atraso-form-actions .atraso-btn {
+        width: 100%;
+    }
+
+    .atraso-inline-search {
+        flex-direction: column;
+    }
+
+    .atraso-selected-student {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .atraso-aluno-admin-row {
+        grid-template-columns: 45px 1fr;
+    }
+
+    .atraso-aluno-admin-row select,
+    .atraso-aluno-admin-row button {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/* =========================================================
+   DARK MODE OPCIONAL
+   Funciona caso seu sistema use body.dark ou .dark-mode
+========================================================= */
+
+body.dark .atraso-module,
+body.dark-mode .atraso-module {
+
+    --atraso-bg: #101820;
+    --atraso-card: #17232e;
+    --atraso-text: #f1f5f9;
+    --atraso-muted: #aab5c0;
+    --atraso-border: #2c3945;
+}
+
+body.dark .atraso-field input,
+body.dark .atraso-field select,
+body.dark .atraso-field textarea,
+body.dark-mode .atraso-field input,
+body.dark-mode .atraso-field select,
+body.dark-mode .atraso-field textarea {
+    background: #101820;
+    color: white;
+}
+
+body.dark .atraso-student-option,
+body.dark-mode .atraso-student-option,
+body.dark .atraso-user-item,
+body.dark-mode .atraso-user-item,
+body.dark .atraso-turma-item,
+body.dark-mode .atraso-turma-item,
+body.dark .atraso-stat-card,
+body.dark-mode .atraso-stat-card,
+body.dark .atraso-card,
+body.dark-mode .atraso-card,
+body.dark .atraso-modal-content,
+body.dark-mode .atraso-modal-content {
+    background: var(--atraso-card);
+    color: var(--atraso-text);
+}
