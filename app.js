@@ -6,10 +6,17 @@
    window.GestaoAtrasos
 ========================================================= */
 
+// Configuração e Conexão do Supabase
+const SUPABASE_URL = 'https://rcgocynzxfvgitokhrau.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ZSk8fAmdH2EOAmFb6A8mXg_80Gmn1rQ';
+
+// Inicializa o cliente do Supabase
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+console.log('Supabase configurado com sucesso!');
+
 (function () {
 
     "use strict";
-
 
     /* =====================================================
        CONFIGURAÇÃO
@@ -34,7 +41,6 @@
 
     };
 
-
     /* =====================================================
        ESTADO
     ====================================================== */
@@ -51,7 +57,6 @@
 
     };
 
-
     /* =====================================================
        HELPERS DOM
     ====================================================== */
@@ -62,11 +67,9 @@
         return Array.from(document.querySelectorAll(selector));
     };
 
-
     function getElement(id) {
         return document.getElementById(id);
     }
-
 
     /* =====================================================
        STORAGE
@@ -91,7 +94,6 @@
 
     }
 
-
     function saveUsers() {
 
         localStorage.setItem(
@@ -100,7 +102,6 @@
         );
 
     }
-
 
     function saveTurmas() {
 
@@ -111,7 +112,6 @@
 
     }
 
-
     function saveRegistros() {
 
         localStorage.setItem(
@@ -120,7 +120,6 @@
         );
 
     }
-
 
     /* =====================================================
        USUÁRIO ADMINISTRADOR INICIAL
@@ -143,7 +142,6 @@
         }
 
     }
-
 
     /* =====================================================
        SESSION
@@ -169,7 +167,6 @@
 
     }
 
-
     function restoreSession() {
 
         const session = JSON.parse(
@@ -192,14 +189,8 @@
 
     }
 
-
     /* =====================================================
        LOGIN
-       
-       IMPORTANTE:
-       Se seu sistema principal já possui autenticação,
-       substitua esta parte por uma chamada para o usuário
-       atualmente autenticado.
     ====================================================== */
 
     function setCurrentUser(user) {
@@ -214,7 +205,6 @@
 
     }
 
-
     function logout() {
 
         state.currentUser = null;
@@ -228,7 +218,6 @@
 
     }
 
-
     /* =====================================================
        ROLES / PERMISSÕES
     ====================================================== */
@@ -236,15 +225,11 @@
     const ROLE_LABELS = {
 
         monitor: "Monitor",
-
         pedagogico: "Pedagógico",
-
         direcao: "Direção",
-
         administrador: "Administrador"
 
     };
-
 
     const PERMISSIONS = {
 
@@ -274,7 +259,6 @@
 
     };
 
-
     function hasPermission(permission) {
 
         if (!state.currentUser) {
@@ -287,7 +271,6 @@
         return permissions.includes(permission);
 
     }
-
 
     function applyPermissions() {
 
@@ -325,7 +308,6 @@
         updateTabAvailability();
 
     }
-
 
     function updateTabAvailability() {
 
@@ -374,12 +356,6 @@
 
         });
 
-        /*
-         * Caso o usuário não possa acessar a aba que
-         * estava aberta, abre automaticamente a primeira
-         * disponível.
-         */
-
         const activeTab =
             $(".atraso-tab.active");
 
@@ -400,7 +376,6 @@
         }
 
     }
-
 
     /* =====================================================
        UI DO USUÁRIO
@@ -436,7 +411,6 @@
 
     }
 
-
     /* =====================================================
        TABS
     ====================================================== */
@@ -463,7 +437,6 @@
 
     }
 
-
     function setupTabs() {
 
         $$(".atraso-tab").forEach(tab => {
@@ -486,17 +459,13 @@
 
     }
 
-
     /* =====================================================
        DATA / HORA
     ====================================================== */
 
     function pad(number) {
-
         return String(number).padStart(2, "0");
-
     }
-
 
     function getLocalDateTime() {
 
@@ -516,7 +485,6 @@
         };
 
     }
-
 
     function initializeDateTime() {
 
@@ -539,7 +507,6 @@
 
     }
 
-
     /* =====================================================
        TURMAS
     ====================================================== */
@@ -558,7 +525,6 @@
 
     }
 
-
     function sortStudents(students) {
 
         return students.sort(
@@ -571,7 +537,6 @@
         );
 
     }
-
 
     function createTurma(event) {
 
@@ -586,7 +551,6 @@
 
             return;
         }
-
 
         const nomeInput =
             getElement("atraso-turma-nome");
@@ -603,7 +567,6 @@
                 .map(nome => nome.trim())
                 .filter(Boolean);
 
-
         if (!nome) {
 
             showToast(
@@ -614,7 +577,6 @@
             return;
         }
 
-
         if (nomes.length === 0) {
 
             showToast(
@@ -624,7 +586,6 @@
 
             return;
         }
-
 
         const turmaExiste =
             state.turmas.some(
@@ -643,48 +604,32 @@
             return;
         }
 
-
         const alunos = sortStudents(
             nomes.map(nomeAluno => ({
 
                 id: generateId("ALU"),
-
                 nome: nomeAluno,
-
                 numeroChamada: 0,
-
                 situacao: "Matriculado",
-
-                criadoEm:
-                    new Date().toISOString()
+                criadoEm: new Date().toISOString()
 
             }))
         );
 
-
         alunos.forEach(
             (aluno, index) => {
-
-                aluno.numeroChamada =
-                    index + 1;
-
+                aluno.numeroChamada = index + 1;
             }
         );
-
 
         state.turmas.push({
 
             id: generateId("TURMA"),
-
             nome,
-
             alunos,
-
-            criadoEm:
-                new Date().toISOString()
+            criadoEm: new Date().toISOString()
 
         });
-
 
         saveTurmas();
 
@@ -699,7 +644,6 @@
         );
 
     }
-
 
     function renderTurmasAdmin() {
 
@@ -720,7 +664,6 @@
             return;
         }
 
-
         container.innerHTML =
             state.turmas
                 .sort((a, b) =>
@@ -732,16 +675,12 @@
                 .map(turma => {
 
                     return `
-
                     <div class="atraso-turma-item">
-
                         <div class="atraso-turma-header">
-
                             <div>
                                 <strong>
                                     ${escapeHtml(turma.nome)}
                                 </strong>
-
                                 <small>
                                     ${turma.alunos.length} aluno(s)
                                 </small>
@@ -754,16 +693,11 @@
                             >
                                 Excluir turma
                             </button>
-
                         </div>
 
                         ${
                             turma.alunos.map(aluno => `
-
-                                <div
-                                    class="atraso-aluno-admin-row"
-                                >
-
+                                <div class="atraso-aluno-admin-row">
                                     <span class="atraso-chamada">
                                         ${aluno.numeroChamada}
                                     </span>
@@ -776,37 +710,29 @@
                                         data-aluno-status="${aluno.id}"
                                         data-turma-id="${turma.id}"
                                     >
-
                                         <option
                                             value="Matriculado"
                                             ${aluno.situacao === "Matriculado" ? "selected" : ""}
                                         >
                                             Matriculado
                                         </option>
-
                                         <option
                                             value="Remanejado"
                                             ${aluno.situacao === "Remanejado" ? "selected" : ""}
                                         >
                                             Remanejado
                                         </option>
-
                                         <option
                                             value="Transferido"
                                             ${aluno.situacao === "Transferido" ? "selected" : ""}
                                         >
                                             Transferido
                                         </option>
-
                                     </select>
-
                                 </div>
-
                             `).join("")
                         }
-
                     </div>
-
                     `;
 
                 })
@@ -814,30 +740,13 @@
 
     }
 
+    function changeStudentStatus(turmaId, alunoId, status) {
 
-    function changeStudentStatus(
-        turmaId,
-        alunoId,
-        status
-    ) {
+        const turma = state.turmas.find(item => item.id === turmaId);
+        if (!turma) return;
 
-        const turma =
-            state.turmas.find(
-                item => item.id === turmaId
-            );
-
-        if (!turma) {
-            return;
-        }
-
-        const aluno =
-            turma.alunos.find(
-                item => item.id === alunoId
-            );
-
-        if (!aluno) {
-            return;
-        }
+        const aluno = turma.alunos.find(item => item.id === alunoId);
+        if (!aluno) return;
 
         aluno.situacao = status;
 
@@ -854,45 +763,28 @@
 
     }
 
-
     function deleteTurma(turmaId) {
 
-        const turma =
-            state.turmas.find(
-                item => item.id === turmaId
-            );
+        const turma = state.turmas.find(item => item.id === turmaId);
+        if (!turma) return;
 
-        if (!turma) {
-            return;
-        }
+        const confirmed = window.confirm(
+            `Excluir a turma "${turma.nome}"?\n\n` +
+            `Os registros históricos de atraso NÃO serão apagados.`
+        );
 
-        const confirmed =
-            window.confirm(
-                `Excluir a turma "${turma.nome}"?\n\n` +
-                `Os registros históricos de atraso NÃO serão apagados.`
-            );
+        if (!confirmed) return;
 
-        if (!confirmed) {
-            return;
-        }
-
-        state.turmas =
-            state.turmas.filter(
-                item => item.id !== turmaId
-            );
+        state.turmas = state.turmas.filter(item => item.id !== turmaId);
 
         saveTurmas();
 
         renderTurmasAdmin();
         populateTurmaSelects();
 
-        showToast(
-            "Turma excluída.",
-            "success"
-        );
+        showToast("Turma excluída.", "success");
 
     }
-
 
     /* =====================================================
        SELECTS DE TURMAS
@@ -901,83 +793,41 @@
     function populateTurmaSelects() {
 
         const selects = [
-
-            getElement(
-                "atraso-turma-registro"
-            ),
-
-            getElement(
-                "atraso-filtro-turma"
-            )
-
+            getElement("atraso-turma-registro"),
+            getElement("atraso-filtro-turma")
         ];
-
 
         selects.forEach(select => {
 
-            if (!select) {
-                return;
-            }
+            if (!select) return;
 
-            const previous =
-                select.value;
+            const previous = select.value;
+            const isFilter = select.id === "atraso-filtro-turma";
 
-            const isFilter =
-                select.id ===
-                "atraso-filtro-turma";
+            select.innerHTML = isFilter
+                ? `<option value="">Todas as turmas</option>`
+                : `<option value="">Selecione uma turma</option>`;
 
-
-            select.innerHTML =
-                isFilter
-                    ? `<option value="">
-                            Todas as turmas
-                       </option>`
-                    : `<option value="">
-                            Selecione uma turma
-                       </option>`;
-
-
-            const sorted =
-                [...state.turmas]
-                    .sort((a, b) =>
-                        a.nome.localeCompare(
-                            b.nome,
-                            "pt-BR"
-                        )
-                    );
-
+            const sorted = [...state.turmas].sort((a, b) =>
+                a.nome.localeCompare(b.nome, "pt-BR")
+            );
 
             sorted.forEach(turma => {
 
-                const option =
-                    document.createElement("option");
-
-                option.value =
-                    turma.id;
-
-                option.textContent =
-                    turma.nome;
-
+                const option = document.createElement("option");
+                option.value = turma.id;
+                option.textContent = turma.nome;
                 select.appendChild(option);
 
             });
 
-
-            if (
-                previous &&
-                state.turmas.some(
-                    turma => turma.id === previous
-                )
-            ) {
-
+            if (previous && state.turmas.some(turma => turma.id === previous)) {
                 select.value = previous;
-
             }
 
         });
 
     }
-
 
     /* =====================================================
        REGISTRO DE ATRASO
@@ -985,308 +835,134 @@
 
     function setupRegistration() {
 
-        const turmaSelect =
-            getElement("atraso-turma-registro");
+        const turmaSelect = getElement("atraso-turma-registro");
+        const searchInput = getElement("atraso-busca-aluno");
+        const form = getElement("atraso-form-registro");
 
-        const searchInput =
-            getElement("atraso-busca-aluno");
+        turmaSelect?.addEventListener("change", () => {
+            state.turmaRegistro = turmaSelect.value;
+            state.alunoSelecionado = null;
+            clearSelectedStudent();
+            renderRegistrationStudents();
+        });
 
-        const form =
-            getElement("atraso-form-registro");
+        searchInput?.addEventListener("input", () => {
+            renderRegistrationStudents();
+        });
 
-        turmaSelect?.addEventListener(
-            "change",
-            () => {
+        form?.addEventListener("submit", registerDelay);
 
-                state.turmaRegistro =
-                    turmaSelect.value;
+        getElement("atraso-remover-aluno")?.addEventListener("click", () => {
+            state.alunoSelecionado = null;
+            clearSelectedStudent();
+            renderRegistrationStudents();
+        });
 
-                state.alunoSelecionado =
-                    null;
-
-                clearSelectedStudent();
-
-                renderRegistrationStudents();
-
-            }
-        );
-
-
-        searchInput?.addEventListener(
-            "input",
-            () => {
-
-                renderRegistrationStudents();
-
-            }
-        );
-
-
-        form?.addEventListener(
-            "submit",
-            registerDelay
-        );
-
-
-        getElement(
-            "atraso-remover-aluno"
-        )?.addEventListener(
-            "click",
-            () => {
-
+        getElement("atraso-btn-limpar")?.addEventListener("click", () => {
+            setTimeout(() => {
                 state.alunoSelecionado = null;
-
                 clearSelectedStudent();
-
+                initializeDateTime();
                 renderRegistrationStudents();
-
-            }
-        );
-
-
-        getElement(
-            "atraso-btn-limpar"
-        )?.addEventListener(
-            "click",
-            () => {
-
-                setTimeout(() => {
-
-                    state.alunoSelecionado = null;
-
-                    clearSelectedStudent();
-
-                    initializeDateTime();
-
-                    renderRegistrationStudents();
-
-                }, 0);
-
-            }
-        );
+            }, 0);
+        });
 
     }
-
 
     function getSelectedRegistrationTurma() {
 
         return state.turmas.find(
-            turma =>
-                turma.id === state.turmaRegistro
+            turma => turma.id === state.turmaRegistro
         );
 
     }
 
-
     function getStudentDelayCount(alunoId) {
 
         return state.registros.filter(
-            registro =>
-                registro.alunoId === alunoId
+            registro => registro.alunoId === alunoId
         ).length;
 
     }
 
-
     function renderRegistrationStudents() {
 
-        const container =
-            getElement(
-                "atraso-lista-alunos-registro"
-            );
+        const container = getElement("atraso-lista-alunos-registro");
+        if (!container) return;
 
-        if (!container) {
-            return;
-        }
-
-        const turma =
-            getSelectedRegistrationTurma();
-
+        const turma = getSelectedRegistrationTurma();
 
         if (!turma) {
-
-            container.innerHTML =
-                `<div class="atraso-empty">
-                    Selecione uma turma para visualizar os alunos.
-                </div>`;
-
+            container.innerHTML = `<div class="atraso-empty">Selecione uma turma para visualizar os alunos.</div>`;
             return;
         }
 
+        const search = (getElement("atraso-busca-aluno")?.value || "").trim().toLowerCase();
 
-        const search =
-            (
-                getElement(
-                    "atraso-busca-aluno"
-                )?.value || ""
-            )
-                .trim()
-                .toLowerCase();
-
-
-        const students =
-            turma.alunos
-                .filter(
-                    aluno =>
-                        aluno.situacao ===
-                        "Matriculado"
-                )
-                .filter(aluno => {
-
-                    if (!search) {
-                        return true;
-                    }
-
-                    return (
-
-                        aluno.nome
-                            .toLowerCase()
-                            .includes(search)
-
-                        ||
-
-                        String(
-                            aluno.numeroChamada
-                        ) === search
-
-                    );
-
-                })
-                .sort(
-                    (a, b) =>
-                        a.numeroChamada -
-                        b.numeroChamada
-                );
-
+        const students = turma.alunos
+            .filter(aluno => aluno.situacao === "Matriculado")
+            .filter(aluno => {
+                if (!search) return true;
+                return aluno.nome.toLowerCase().includes(search) || String(aluno.numeroChamada) === search;
+            })
+            .sort((a, b) => a.numeroChamada - b.numeroChamada);
 
         if (students.length === 0) {
-
-            container.innerHTML =
-                `<div class="atraso-empty">
-                    Nenhum aluno matriculado encontrado.
-                </div>`;
-
+            container.innerHTML = `<div class="atraso-empty">Nenhum aluno matriculado encontrado.</div>`;
             return;
         }
 
+        container.innerHTML = students.map(aluno => {
 
-        container.innerHTML =
-            students.map(aluno => {
+            const count = getStudentDelayCount(aluno.id);
+            const alerta = count > 3 ? "alerta" : "";
 
-                const count =
-                    getStudentDelayCount(
-                        aluno.id
-                    );
+            return `
+                <button
+                    type="button"
+                    class="atraso-student-option ${alerta}"
+                    data-select-student="${aluno.id}"
+                >
+                    <span>
+                        <strong>${aluno.numeroChamada}. ${escapeHtml(aluno.nome)}</strong>
+                        <small>Matriculado</small>
+                    </span>
+                    <span class="atraso-student-count">${count} atraso(s)</span>
+                </button>
+            `;
 
-                const alerta =
-                    count > 3
-                        ? "alerta"
-                        : "";
-
-                return `
-
-                    <button
-                        type="button"
-                        class="atraso-student-option ${alerta}"
-                        data-select-student="${aluno.id}"
-                    >
-
-                        <span>
-
-                            <strong>
-                                ${aluno.numeroChamada}.
-                                ${escapeHtml(aluno.nome)}
-                            </strong>
-
-                            <small>
-                                Matriculado
-                            </small>
-
-                        </span>
-
-                        <span class="atraso-student-count">
-                            ${count} atraso(s)
-                        </span>
-
-                    </button>
-
-                `;
-
-            }).join("");
+        }).join("");
 
     }
-
 
     function selectStudent(alunoId) {
 
-        const turma =
-            getSelectedRegistrationTurma();
+        const turma = getSelectedRegistrationTurma();
+        if (!turma) return;
 
-        if (!turma) {
-            return;
-        }
-
-        const aluno =
-            turma.alunos.find(
-                item =>
-                    item.id === alunoId &&
-                    item.situacao ===
-                    "Matriculado"
-            );
-
-        if (!aluno) {
-            return;
-        }
+        const aluno = turma.alunos.find(
+            item => item.id === alunoId && item.situacao === "Matriculado"
+        );
+        if (!aluno) return;
 
         state.alunoSelecionado = {
-
             alunoId: aluno.id,
-
             turmaId: turma.id
-
         };
 
-
-        getElement(
-            "atraso-aluno-selecionado"
-        ).value = aluno.id;
-
-        getElement(
-            "atraso-aluno-selecionado-nome"
-        ).textContent = aluno.nome;
-
-        getElement(
-            "atraso-aluno-selecionado-numero"
-        ).textContent =
-            aluno.numeroChamada;
-
-        getElement(
-            "atraso-aluno-selecionado-card"
-        ).classList.remove("hidden");
-
-        getElement(
-            "atraso-lista-alunos-registro"
-        ).classList.add("hidden");
-
-        getElement(
-            "atraso-busca-aluno"
-        ).value = "";
+        getElement("atraso-aluno-selecionado").value = aluno.id;
+        getElement("atraso-aluno-selecionado-nome").textContent = aluno.nome;
+        getElement("atraso-aluno-selecionado-numero").textContent = aluno.numeroChamada;
+        getElement("atraso-aluno-selecionado-card").classList.remove("hidden");
+        getElement("atraso-lista-alunos-registro").classList.add("hidden");
+        getElement("atraso-busca-aluno").value = "";
 
     }
-
 
     function clearSelectedStudent() {
-
-        getElement(
-            "atraso-aluno-selecionado"
-        ).value = "";
-
-        getElement(
-            "atraso-aluno-selecionado-card"
-        ).classList.add("hidden");
-
+        getElement("atraso-aluno-selecionado").value = "";
+        getElement("atraso-aluno-selecionado-card").classList.add("hidden");
     }
-
 
     /* =====================================================
        GERAÇÃO DE ID DE 5 DÍGITOS
@@ -1294,41 +970,16 @@
 
     function generateDelayId() {
 
-        const used =
-            new Set(
-                state.registros.map(
-                    registro =>
-                        registro.id
-                )
-            );
+        const used = new Set(state.registros.map(registro => registro.id));
 
-
-        /*
-         * Procura um número livre entre 00001 e 99999.
-         */
-
-        for (
-            let number = 1;
-            number <= 99999;
-            number++
-        ) {
-
-            const id =
-                String(number)
-                    .padStart(5, "0");
-
-            if (!used.has(id)) {
-                return id;
-            }
-
+        for (let number = 1; number <= 99999; number++) {
+            const id = String(number).padStart(5, "0");
+            if (!used.has(id)) return id;
         }
 
-        throw new Error(
-            "Limite de 99.999 registros atingido."
-        );
+        throw new Error("Limite de 99.999 registros atingido.");
 
     }
-
 
     /* =====================================================
        SALVAR ATRASO
@@ -1338,2024 +989,383 @@
 
         event.preventDefault();
 
-
-        if (
-            !hasPermission("registrar")
-        ) {
-
-            showToast(
-                "Seu cargo não possui permissão para registrar atrasos.",
-                "error"
-            );
-
+        if (!hasPermission("registrar")) {
+            showToast("Seu cargo não possui permissão para registrar atrasos.", "error");
             return;
         }
 
-
-        if (
-            !state.currentUser
-        ) {
-
-            showToast(
-                "Nenhum usuário autenticado.",
-                "error"
-            );
-
+        if (!state.currentUser) {
+            showToast("Nenhum usuário autenticado.", "error");
             return;
         }
 
-
-        if (
-            !state.alunoSelecionado
-        ) {
-
-            showToast(
-                "Selecione um aluno.",
-                "error"
-            );
-
+        if (!state.alunoSelecionado) {
+            showToast("Selecione um aluno.", "error");
             return;
         }
 
-
-        const turma =
-            state.turmas.find(
-                item =>
-                    item.id ===
-                    state.alunoSelecionado.turmaId
-            );
-
-
+        const turma = state.turmas.find(item => item.id === state.alunoSelecionado.turmaId);
         if (!turma) {
-
-            showToast(
-                "Turma não encontrada.",
-                "error"
-            );
-
+            showToast("Turma não encontrada.", "error");
             return;
         }
 
-
-        const aluno =
-            turma.alunos.find(
-                item =>
-                    item.id ===
-                    state.alunoSelecionado.alunoId
-            );
-
-
-        if (
-            !aluno ||
-            aluno.situacao !==
-            "Matriculado"
-        ) {
-
-            showToast(
-                "Somente alunos matriculados podem receber registros.",
-                "error"
-            );
-
+        const aluno = turma.alunos.find(item => item.id === state.alunoSelecionado.alunoId);
+        if (!aluno || aluno.situacao !== "Matriculado") {
+            showToast("Somente alunos matriculados podem receber registros.", "error");
             return;
         }
 
-
-        const data =
-            getElement(
-                "atraso-data"
-            ).value;
-
-        const hora =
-            getElement(
-                "atraso-hora"
-            ).value;
-
-        const justificado =
-            getElement(
-                "atraso-justificado"
-            ).checked;
-
+        const data = getElement("atraso-data").value;
+        const hora = getElement("atraso-hora").value;
+        const justificado = getElement("atraso-justificado").checked;
 
         if (!data || !hora) {
-
-            showToast(
-                "Informe data e hora.",
-                "error"
-            );
-
+            showToast("Informe data e hora.", "error");
             return;
         }
 
-
-        const id =
-            generateDelayId();
-
+        const id = generateDelayId();
 
         const registro = {
-
             id,
-
             alunoId: aluno.id,
-
-            alunoNome:
-                aluno.nome,
-
-            turmaId:
-                turma.id,
-
-            turmaNome:
-                turma.nome,
-
-            numeroChamada:
-                aluno.numeroChamada,
-
+            alunoNome: aluno.nome,
+            turmaId: turma.id,
+            turmaNome: turma.nome,
+            numeroChamada: aluno.numeroChamada,
             data,
-
             hora,
-
             justificado,
-
-            status:
-                justificado
-                    ? "Justificado"
-                    : "Não justificado",
-
-            usuarioId:
-                state.currentUser.id,
-
-            usuarioNome:
-                state.currentUser.nome,
-
-            criadoEm:
-                new Date().toISOString()
-
+            status: justificado ? "Justificado" : "Não justificado",
+            usuarioId: state.currentUser.id,
+            usuarioNome: state.currentUser.nome,
+            criadoEm: new Date().toISOString()
         };
 
-
-        state.registros.push(
-            registro
-        );
-
+        state.registros.push(registro);
         saveRegistros();
 
-
-        showToast(
-            `Atraso registrado com sucesso. ID: ${id}`,
-            "success"
-        );
-
+        showToast(`Atraso registrado com sucesso. ID: ${id}`, "success");
 
         resetRegistrationForm();
-
         refreshAll();
 
     }
 
-
     function resetRegistrationForm() {
 
-        getElement(
-            "atraso-form-registro"
-        )?.reset();
-
+        getElement("atraso-form-registro")?.reset();
         state.turmaRegistro = "";
-
         state.alunoSelecionado = null;
-
         clearSelectedStudent();
-
         initializeDateTime();
-
         renderRegistrationStudents();
 
     }
 
-
     /* =====================================================
-       CONSULTAS
+       CONSULTAS E RELATÓRIOS
     ====================================================== */
 
     function setupConsultas() {
 
-        getElement(
-            "atraso-filtro-turma"
-        )?.addEventListener(
-            "change",
-            renderConsultas
-        );
-
-
-        getElement(
-            "atraso-filtro-aluno"
-        )?.addEventListener(
-            "input",
-            renderConsultas
-        );
-
-
-        getElement(
-            "atraso-btn-buscar-id"
-        )?.addEventListener(
-            "click",
-            searchById
-        );
-
-
-        getElement(
-            "atraso-busca-id"
-        )?.addEventListener(
-            "keydown",
-            event => {
-
-                if (
-                    event.key ===
-                    "Enter"
-                ) {
-
-                    event.preventDefault();
-
-                    searchById();
-
-                }
-
-            }
-        );
-
-
-        getElement(
-            "atraso-exportar"
-        )?.addEventListener(
-            "click",
-            exportExcel
-        );
+        getElement("atraso-filtro-turma")?.addEventListener("change", () => renderConsultas());
+        getElement("atraso-filtro-aluno")?.addEventListener("input", () => renderConsultas());
+        getElement("atraso-btn-buscar-id")?.addEventListener("click", searchById);
+        getElement("atraso-exportar")?.addEventListener("click", exportToCSV);
 
     }
-
-
-    function getFilteredRecords() {
-
-        const turmaId =
-            getElement(
-                "atraso-filtro-turma"
-            )?.value || "";
-
-
-        const alunoSearch =
-            (
-                getElement(
-                    "atraso-filtro-aluno"
-                )?.value || ""
-            )
-                .trim()
-                .toLowerCase();
-
-
-        return state.registros
-            .filter(registro => {
-
-                if (
-                    turmaId &&
-                    registro.turmaId !== turmaId
-                ) {
-                    return false;
-                }
-
-                if (!alunoSearch) {
-                    return true;
-                }
-
-                return (
-
-                    registro.alunoNome
-                        .toLowerCase()
-                        .includes(
-                            alunoSearch
-                        )
-
-                    ||
-
-                    String(
-                        registro.numeroChamada
-                    ) === alunoSearch
-
-                );
-
-            })
-            .sort(
-                compareDateTimeDesc
-            );
-
-    }
-
-
-    function compareDateTimeDesc(a, b) {
-
-        const dateA =
-            new Date(
-                `${a.data}T${a.hora}`
-            );
-
-        const dateB =
-            new Date(
-                `${b.data}T${b.hora}`
-            );
-
-        return dateB - dateA;
-
-    }
-
-
-    function renderConsultas() {
-
-        if (
-            !hasPermission("consultar")
-        ) {
-            return;
-        }
-
-
-        const registros =
-            getFilteredRecords();
-
-
-        const tbody =
-            getElement(
-                "atraso-tbody-consultas"
-            );
-
-        const empty =
-            getElement(
-                "atraso-consulta-vazia"
-            );
-
-
-        if (!tbody) {
-            return;
-        }
-
-
-        tbody.innerHTML = "";
-
-
-        if (registros.length === 0) {
-
-            empty?.classList.remove(
-                "hidden"
-            );
-
-        } else {
-
-            empty?.classList.add(
-                "hidden"
-            );
-
-        }
-
-
-        registros.forEach(
-            registro => {
-
-                const count =
-                    getStudentDelayCount(
-                        registro.alunoId
-                    );
-
-                const tr =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                if (count > 3) {
-                    tr.classList.add(
-                        "atraso-alerta"
-                    );
-                }
-
-
-                tr.innerHTML = `
-
-                    <td>
-                        <span class="atraso-id">
-                            ${registro.id}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${formatDate(
-                            registro.data
-                        )}
-                    </td>
-
-                    <td>
-                        ${registro.hora}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            registro.alunoNome
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            registro.turmaNome
-                        )}
-                    </td>
-
-                    <td>
-                        ${registro.numeroChamada}
-                    </td>
-
-                    <td>
-                        <span class="atraso-status ${
-                            registro.justificado
-                                ? "justificado"
-                                : "nao-justificado"
-                        }">
-                            ${
-                                registro.justificado
-                                    ? "Justificado"
-                                    : "Não justificado"
-                            }
-                        </span>
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            registro.usuarioNome
-                        )}
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            class="atraso-btn atraso-btn-secondary atraso-btn-small"
-                            data-open-history="${registro.alunoId}"
-                        >
-                            Histórico
-                        </button>
-
-                    </td>
-
-                `;
-
-
-                tbody.appendChild(tr);
-
-            }
-        );
-
-
-        updateStats();
-
-    }
-
-
-    function updateStats() {
-
-        const registros =
-            getFilteredRecords();
-
-
-        const alunos =
-            new Set(
-                registros.map(
-                    registro =>
-                        registro.alunoId
-                )
-            );
-
-
-        const alertas =
-            Array.from(
-                new Set(
-                    state.registros
-                        .filter(
-                            registro =>
-                                getStudentDelayCount(
-                                    registro.alunoId
-                                ) > 3
-                        )
-                        .map(
-                            registro =>
-                                registro.alunoId
-                        )
-                )
-            );
-
-
-        getElement(
-            "atraso-stat-total"
-        ).textContent =
-            registros.length;
-
-
-        getElement(
-            "atraso-stat-alunos"
-        ).textContent =
-            alunos.size;
-
-
-        getElement(
-            "atraso-stat-alertas"
-        ).textContent =
-            alertas.length;
-
-    }
-
-
-    /* =====================================================
-       BUSCA POR ID
-    ====================================================== */
 
     function searchById() {
 
-        const input =
-            getElement(
-                "atraso-busca-id"
-            );
+        const input = getElement("atraso-busca-id");
+        const id = input?.value.trim().padStart(5, "0");
 
-        const container =
-            getElement(
-                "atraso-resultado-id"
-            );
-
-
-        const id =
-            input.value
-                .replace(/\D/g, "")
-                .padStart(5, "0");
-
-
-        input.value = id;
-
-
-        if (
-            !/^\d{5}$/.test(id)
-        ) {
-
-            container.innerHTML =
-                `<div class="atraso-empty">
-                    Digite um ID de 5 dígitos.
-                </div>`;
-
+        if (!id) {
+            showToast("Informe o ID do registro.", "error");
             return;
         }
 
-
-        const registro =
-            state.registros.find(
-                item =>
-                    item.id === id
-            );
-
+        const registro = state.registros.find(item => item.id === id);
 
         if (!registro) {
-
-            container.innerHTML =
-                `<div class="atraso-empty atraso-danger-text">
-                    Registro ${id} não encontrado.
-                </div>`;
-
+            showToast(`Registro #${id} não encontrado.`, "error");
             return;
         }
 
-
-        container.innerHTML = `
-
-            <div class="atraso-card atraso-search-result">
-
-                <strong>
-                    Registro #${registro.id}
-                </strong>
-
-                <p>
-                    <b>Aluno:</b>
-                    ${escapeHtml(registro.alunoNome)}
-                </p>
-
-                <p>
-                    <b>Turma:</b>
-                    ${escapeHtml(registro.turmaNome)}
-                </p>
-
-                <p>
-                    <b>Data:</b>
-                    ${formatDate(registro.data)}
-                    às ${registro.hora}
-                </p>
-
-                <p>
-                    <b>Status:</b>
-                    ${registro.status}
-                </p>
-
-                <p>
-                    <b>Registrado por:</b>
-                    ${escapeHtml(registro.usuarioNome)}
-                </p>
-
-                <button
-                    type="button"
-                    class="atraso-btn atraso-btn-secondary"
-                    data-open-history="${registro.alunoId}"
-                >
-                    Ver histórico do aluno
-                </button>
-
-            </div>
-
-        `;
+        renderConsultas([registro]);
 
     }
 
+    function renderConsultas(registrosFiltrados = null) {
 
-    /* =====================================================
-       HISTÓRICO INDIVIDUAL
-    ====================================================== */
+        const tbody = getElement("atraso-tbody-consultas");
+        const emptyMsg = getElement("atraso-consulta-vazia");
+        if (!tbody) return;
 
-    function openStudentHistory(alunoId) {
+        let dados = registrosFiltrados || state.registros;
 
-        if (
-            !hasPermission("consultar")
-        ) {
-            return;
-        }
+        if (!registrosFiltrados) {
+            const turmaId = getElement("atraso-filtro-turma")?.value || "";
+            const alunoBusca = (getElement("atraso-filtro-aluno")?.value || "").trim().toLowerCase();
 
-
-        const registros =
-            state.registros
-                .filter(
-                    registro =>
-                        registro.alunoId ===
-                        alunoId
-                )
-                .sort(
-                    compareDateTimeDesc
-                );
-
-
-        let aluno = null;
-        let turma = null;
-
-
-        for (
-            const turmaItem
-            of state.turmas
-        ) {
-
-            const found =
-                turmaItem.alunos.find(
-                    item =>
-                        item.id ===
-                        alunoId
-                );
-
-            if (found) {
-
-                aluno = found;
-                turma = turmaItem;
-
-                break;
-
-            }
-
-        }
-
-
-        if (!aluno) {
-
-            const registro =
-                registros[0];
-
-            if (registro) {
-
-                aluno = {
-                    nome:
-                        registro.alunoNome,
-
-                    numeroChamada:
-                        registro.numeroChamada
-                };
-
-                turma = {
-                    nome:
-                        registro.turmaNome
-                };
-
-            }
-
-        }
-
-
-        if (!aluno) {
-            return;
-        }
-
-
-        getElement(
-            "atraso-modal-aluno-nome"
-        ).textContent =
-            aluno.nome;
-
-
-        getElement(
-            "atraso-modal-aluno-info"
-        ).innerHTML = `
-
-            <div class="atraso-card">
-
-                <strong>
-                    Turma:
-                </strong>
-
-                ${escapeHtml(
-                    turma?.nome || "-"
-                )}
-
-                &nbsp;&nbsp;
-
-                <strong>
-                    Chamada:
-                </strong>
-
-                ${aluno.numeroChamada || "-"}
-
-                &nbsp;&nbsp;
-
-                <strong>
-                    Total de atrasos:
-                </strong>
-
-                ${registros.length}
-
-            </div>
-
-        `;
-
-
-        const tbody =
-            getElement(
-                "atraso-modal-historico-body"
-            );
-
-
-        tbody.innerHTML =
-            registros.length
-                ? registros.map(
-                    registro => `
-
-                        <tr>
-
-                            <td>
-                                <span class="atraso-id">
-                                    ${registro.id}
-                                </span>
-                            </td>
-
-                            <td>
-                                ${formatDate(
-                                    registro.data
-                                )}
-                            </td>
-
-                            <td>
-                                ${registro.hora}
-                            </td>
-
-                            <td>
-                                <span class="atraso-status ${
-                                    registro.justificado
-                                        ? "justificado"
-                                        : "nao-justificado"
-                                }">
-                                    ${registro.status}
-                                </span>
-                            </td>
-
-                            <td>
-                                ${escapeHtml(
-                                    registro.usuarioNome
-                                )}
-                            </td>
-
-                        </tr>
-
-                    `
-                ).join("")
-                :
-                `
-                    <tr>
-                        <td colspan="5">
-                            Nenhum atraso registrado.
-                        </td>
-                    </tr>
-                `;
-
-
-        openModal(
-            "atraso-modal-historico"
-        );
-
-    }
-
-
-    /* =====================================================
-       USUÁRIOS
-    ====================================================== */
-
-    function createUser(event) {
-
-        event.preventDefault();
-
-
-        if (
-            !hasPermission("usuarios")
-        ) {
-
-            showToast(
-                "Acesso negado.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const nome =
-            getElement(
-                "atraso-usuario-nome"
-            ).value.trim();
-
-
-        const username =
-            getElement(
-                "atraso-usuario-login"
-            ).value.trim();
-
-
-        const password =
-            getElement(
-                "atraso-usuario-senha"
-            ).value;
-
-
-        const cargo =
-            getElement(
-                "atraso-usuario-cargo"
-            ).value;
-
-
-        if (
-            !nome ||
-            !username ||
-            !password ||
-            !cargo
-        ) {
-
-            showToast(
-                "Preencha todos os campos.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const loginExists =
-            state.users.some(
-                user =>
-                    user.username
-                        .toLowerCase() ===
-                    username.toLowerCase()
-            );
-
-
-        if (loginExists) {
-
-            showToast(
-                "Esse nome de usuário já existe.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        state.users.push({
-
-            id:
-                generateId("USR"),
-
-            nome,
-
-            username,
-
-            password,
-
-            cargo,
-
-            criadoEm:
-                new Date().toISOString()
-
-        });
-
-
-        saveUsers();
-
-        event.target.reset();
-
-        renderUsers();
-
-        showToast(
-            "Usuário criado com sucesso.",
-            "success"
-        );
-
-    }
-
-
-    function renderUsers() {
-
-        const container =
-            getElement(
-                "atraso-lista-usuarios"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        if (state.users.length === 0) {
-
-            container.innerHTML =
-                `<div class="atraso-empty">
-                    Nenhum usuário cadastrado.
-                </div>`;
-
-            return;
-        }
-
-
-        container.innerHTML =
-            state.users.map(
-                user => `
-
-                    <div class="atraso-user-item">
-
-                        <div class="atraso-user-info">
-
-                            <strong>
-                                ${escapeHtml(
-                                    user.nome
-                                )}
-                            </strong>
-
-                            <span>
-                                Login:
-                                ${escapeHtml(
-                                    user.username
-                                )}
-                            </span>
-
-                        </div>
-
-                        <div>
-
-                            <span class="atraso-role-badge">
-                                ${
-                                    ROLE_LABELS[
-                                        user.cargo
-                                    ] ||
-                                    user.cargo
-                                }
-                            </span>
-
-                            ${
-                                user.username !== "admin"
-                                    ? `
-                                        <button
-                                            type="button"
-                                            class="atraso-btn atraso-btn-danger atraso-btn-small"
-                                            data-delete-user="${user.id}"
-                                        >
-                                            Excluir
-                                        </button>
-                                      `
-                                    : ""
-                            }
-
-                        </div>
-
-                    </div>
-
-                `
-            ).join("");
-
-    }
-
-
-    function deleteUser(userId) {
-
-        if (
-            !hasPermission("usuarios")
-        ) {
-            return;
-        }
-
-
-        const user =
-            state.users.find(
-                item =>
-                    item.id === userId
-            );
-
-
-        if (!user) {
-            return;
-        }
-
-
-        if (
-            user.username === "admin"
-        ) {
-
-            showToast(
-                "A conta admin padrão não pode ser excluída.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const confirmed =
-            window.confirm(
-                `Excluir o usuário "${user.nome}"?`
-            );
-
-
-        if (!confirmed) {
-            return;
-        }
-
-
-        state.users =
-            state.users.filter(
-                item =>
-                    item.id !== userId
-            );
-
-
-        saveUsers();
-
-        renderUsers();
-
-        showToast(
-            "Usuário excluído.",
-            "success"
-        );
-
-    }
-
-
-    /* =====================================================
-       ALTERAÇÃO DE SENHA
-    ====================================================== */
-
-    function changeOwnPassword(event) {
-
-        event.preventDefault();
-
-
-        if (!state.currentUser) {
-
-            showToast(
-                "Usuário não autenticado.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const current =
-            getElement(
-                "atraso-senha-atual"
-            ).value;
-
-
-        const newPassword =
-            getElement(
-                "atraso-nova-senha"
-            ).value;
-
-
-        const confirmation =
-            getElement(
-                "atraso-confirmar-senha"
-            ).value;
-
-
-        if (
-            current !==
-            state.currentUser.password
-        ) {
-
-            showToast(
-                "A senha atual está incorreta.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        if (
-            newPassword !==
-            confirmation
-        ) {
-
-            showToast(
-                "As novas senhas não são iguais.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        if (
-            newPassword.length < 6
-        ) {
-
-            showToast(
-                "A nova senha deve possuir pelo menos 6 caracteres.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const userIndex =
-            state.users.findIndex(
-                user =>
-                    user.id ===
-                    state.currentUser.id
-            );
-
-
-        if (userIndex === -1) {
-            return;
-        }
-
-
-        state.users[userIndex].password =
-            newPassword;
-
-
-        state.currentUser =
-            state.users[userIndex];
-
-
-        saveUsers();
-        saveSession();
-
-
-        event.target.reset();
-
-
-        showToast(
-            "Senha atualizada com sucesso.",
-            "success"
-        );
-
-    }
-
-
-    /* =====================================================
-       EXPORTAÇÃO EXCEL
-    ====================================================== */
-
-    function exportExcel() {
-
-        if (
-            !hasPermission("exportar")
-        ) {
-
-            showToast(
-                "Seu cargo não possui permissão para exportar.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        if (
-            typeof XLSX === "undefined"
-        ) {
-
-            showToast(
-                "A biblioteca SheetJS não foi carregada.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        const workbook =
-            XLSX.utils.book_new();
-
-
-        /* -------------------------------------------------
-           ABA 1: REGISTRO GERAL
-        -------------------------------------------------- */
-
-        const registrosOrdenados =
-            [...state.registros]
-                .sort(
-                    compareDateTimeAsc
-                );
-
-
-        const geralData =
-            registrosOrdenados.map(
-                registro => ({
-
-                    ID:
-                        registro.id,
-
-                    Data:
-                        formatDate(
-                            registro.data
-                        ),
-
-                    Hora:
-                        registro.hora,
-
-                    Aluno:
-                        registro.alunoNome,
-
-                    Turma:
-                        registro.turmaNome,
-
-                    "Nº Chamada":
-                        registro.numeroChamada,
-
-                    Status:
-                        registro.status,
-
-                    "Registrado por":
-                        registro.usuarioNome,
-
-                    "Data de criação":
-                        formatDateTime(
-                            registro.criadoEm
-                        )
-
-                })
-            );
-
-
-        const geralSheet =
-            XLSX.utils.json_to_sheet(
-                geralData
-            );
-
-
-        XLSX.utils.book_append_sheet(
-            workbook,
-            geralSheet,
-            "Registro Geral"
-        );
-
-
-        /* -------------------------------------------------
-           ABAS POR TURMA
-        -------------------------------------------------- */
-
-        state.turmas
-            .sort(
-                (a, b) =>
-                    a.nome.localeCompare(
-                        b.nome,
-                        "pt-BR"
-                    )
-            )
-            .forEach(turma => {
-
-                const alunos =
-                    [...turma.alunos]
-                        .sort(
-                            (a, b) =>
-                                a.numeroChamada -
-                                b.numeroChamada
-                        );
-
-
-                const turmaRows =
-                    alunos.map(aluno => {
-
-                        const registrosAluno =
-                            state.registros
-                                .filter(
-                                    registro =>
-                                        registro.alunoId ===
-                                        aluno.id &&
-                                        registro.turmaId ===
-                                        turma.id
-                                )
-                                .sort(
-                                    compareDateTimeAsc
-                                );
-
-
-                        const row = {
-
-                            "Nº Chamada":
-                                aluno.numeroChamada,
-
-                            "Aluno":
-                                aluno.nome,
-
-                            "Situação":
-                                aluno.situacao
-
-                        };
-
-
-                        registrosAluno.forEach(
-                            (registro, index) => {
-
-                                row[
-                                    `Atraso ${index + 1}`
-                                ] =
-                                    `${formatDate(
-                                        registro.data
-                                    )} ${registro.hora}`;
-
-                            }
-                        );
-
-
-                        return row;
-
-                    });
-
-
-                /*
-                 * O Excel deve possuir no mínimo as colunas
-                 * de chamada, aluno e situação.
-                 *
-                 * As demais colunas são criadas
-                 * sequencialmente conforme os atrasos.
-                 */
-
-                const sheet =
-                    XLSX.utils.json_to_sheet(
-                        turmaRows
-                    );
-
-
-                const safeSheetName =
-                    sanitizeSheetName(
-                        turma.nome
-                    );
-
-
-                XLSX.utils.book_append_sheet(
-                    workbook,
-                    sheet,
-                    safeSheetName
-                );
-
+            dados = dados.filter(item => {
+                const matchTurma = !turmaId || item.turmaId === turmaId;
+                const matchAluno = !alunoBusca || item.alunoNome.toLowerCase().includes(alunoBusca);
+                return matchTurma && matchAluno;
             });
-
-
-        /* -------------------------------------------------
-           DOWNLOAD
-        -------------------------------------------------- */
-
-        const date =
-            new Date();
-
-        const filename =
-            `Gestao_Atrasos_${date.getFullYear()}-` +
-            `${pad(date.getMonth() + 1)}-` +
-            `${pad(date.getDate())}.xlsx`;
-
-
-        XLSX.writeFile(
-            workbook,
-            filename
-        );
-
-
-        showToast(
-            "Planilha gerada com sucesso.",
-            "success"
-        );
-
-    }
-
-
-    function compareDateTimeAsc(a, b) {
-
-        const dateA =
-            new Date(
-                `${a.data}T${a.hora}`
-            );
-
-        const dateB =
-            new Date(
-                `${b.data}T${b.hora}`
-            );
-
-        return dateA - dateB;
-
-    }
-
-
-    function sanitizeSheetName(name) {
-
-        /*
-         * Excel não permite:
-         * \ / ? * [ ]
-         */
-
-        let safe =
-            name.replace(
-                /[\\\/\?\*\[\]\:]/g,
-                "-"
-            );
-
-
-        if (!safe.trim()) {
-            safe = "Turma";
         }
 
+        // Atualizar Indicadores/Estatísticas
+        const totalRegistros = dados.length;
+        const alunosUnicos = new Set(dados.map(item => item.alunoId)).size;
+        
+        // Contagem de alertas (mais de 3 atrasos)
+        const contagemPorAluno = {};
+        state.registros.forEach(item => {
+            contagemPorAluno[item.alunoId] = (contagemPorAluno[item.alunoId] || 0) + 1;
+        });
+        const alertas = Object.values(contagemPorAluno).filter(c => c > 3).length;
 
-        return safe
-            .substring(0, 31);
+        if (getElement("atraso-stat-total")) getElement("atraso-stat-total").textContent = totalRegistros;
+        if (getElement("atraso-stat-alunos")) getElement("atraso-stat-alunos").textContent = alunosUnicos;
+        if (getElement("atraso-stat-alertas")) getElement("atraso-stat-alertas").textContent = alertas;
+
+        if (dados.length === 0) {
+            tbody.innerHTML = "";
+            emptyMsg?.classList.remove("hidden");
+            return;
+        }
+
+        emptyMsg?.classList.add("hidden");
+        const canDelete = hasPermission("administrador");
+
+        tbody.innerHTML = dados
+            .slice()
+            .reverse()
+            .map(item => `
+                <tr>
+                    <td><strong>#${item.id}</strong></td>
+                    <td>${formatDate(item.data)}</td>
+                    <td>${item.hora}</td>
+                    <td>${escapeHtml(item.alunoNome)}</td>
+                    <td>${escapeHtml(item.turmaNome)}</td>
+                    <td>${item.numeroChamada}</td>
+                    <td>
+                        <span class="atraso-badge ${item.justificado ? 'justificado' : 'pendente'}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td>${escapeHtml(item.usuarioNome)}</td>
+                    <td>
+                        ${canDelete ? `
+                            <button
+                                type="button"
+                                class="atraso-btn atraso-btn-danger atraso-btn-small"
+                                data-delete-registro="${item.id}"
+                            >
+                                Excluir
+                            </button>
+                        ` : '-'}
+                    </td>
+                </tr>
+            `).join("");
 
     }
 
+    function deleteRegistro(id) {
+
+        if (!hasPermission("administrador")) {
+            showToast("Apenas o Administrador pode excluir registros.", "error");
+            return;
+        }
+
+        if (!window.confirm(`Tem certeza que deseja excluir o registro #${id}?`)) {
+            return;
+        }
+
+        state.registros = state.registros.filter(item => item.id !== id);
+        saveRegistros();
+        renderConsultas();
+        renderRegistrationStudents();
+        showToast(`Registro #${id} excluído com sucesso.`, "success");
+
+    }
 
     /* =====================================================
-       FORMATAÇÃO
+       EXPORTAÇÃO DE DADOS (CSV)
+    ====================================================== */
+
+    function exportToCSV() {
+
+        if (!hasPermission("exportar")) {
+            showToast("Você não possui permissão para exportar relatórios.", "error");
+            return;
+        }
+
+        if (state.registros.length === 0) {
+            showToast("Não há registros para exportar.", "error");
+            return;
+        }
+
+        const headers = ["ID", "Data", "Hora", "Aluno", "Turma", "Nº Chamada", "Status", "Registrado Por"];
+        const rows = state.registros.map(r => [
+            r.id,
+            r.data,
+            r.hora,
+            `"${r.alunoNome.replace(/"/g, '""')}"`,
+            `"${r.turmaNome.replace(/"/g, '""')}"`,
+            r.numeroChamada,
+            r.status,
+            `"${r.usuarioNome.replace(/"/g, '""')}"`
+        ]);
+
+        const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(e => e.join(";"))].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.setAttribute("href", url);
+        link.setAttribute("download", `relatorio_atrasos_${getLocalDateTime().date}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    }
+
+    /* =====================================================
+       UTILITÁRIOS E UI
     ====================================================== */
 
     function formatDate(dateString) {
-
-        if (!dateString) {
-            return "-";
-        }
-
-        const [
-            year,
-            month,
-            day
-        ] =
-            dateString.split("-");
-
-
-        return `${day}/${month}/${year}`;
-
+        if (!dateString) return "";
+        const parts = dateString.split("-");
+        if (parts.length !== 3) return dateString;
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
     }
 
-
-    function formatDateTime(iso) {
-
-        if (!iso) {
-            return "-";
-        }
-
-        const date =
-            new Date(iso);
-
-        return (
-            formatDate(
-                `${date.getFullYear()}-` +
-                `${pad(date.getMonth() + 1)}-` +
-                `${pad(date.getDate())}`
-            ) +
-            " " +
-            `${pad(date.getHours())}:` +
-            `${pad(date.getMinutes())}`
-        );
-
+    function escapeHtml(text) {
+        if (!text) return "";
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
+    function showToast(message, type = "info") {
+
+        const container = getElement("atraso-toast");
+        if (!container) return;
+
+        container.textContent = message;
+        container.className = `atraso-toast atraso-toast-${type} active`;
+
+        setTimeout(() => {
+            container.classList.remove("active");
+        }, 3000);
+
+    }
 
     /* =====================================================
-       MODAL
+       DELEGATION DE EVENTOS E REFRESH
     ====================================================== */
 
-    function openModal(id) {
+    function setupGlobalEvents() {
 
-        const modal =
-            getElement(id);
+        document.addEventListener("click", (event) => {
 
-        if (!modal) {
-            return;
-        }
+            const target = event.target;
 
-        modal.classList.add("open");
-
-        modal.setAttribute(
-            "aria-hidden",
-            "false"
-        );
-
-    }
-
-
-    function closeModal(id) {
-
-        const modal =
-            getElement(id);
-
-        if (!modal) {
-            return;
-        }
-
-        modal.classList.remove("open");
-
-        modal.setAttribute(
-            "aria-hidden",
-            "true"
-        );
-
-    }
-
-
-    function setupModals() {
-
-        $$("[data-atraso-close]").forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const target =
-                            button.dataset.atrasoClose;
-
-                        if (
-                            target ===
-                            "historico"
-                        ) {
-
-                            closeModal(
-                                "atraso-modal-historico"
-                            );
-
-                        }
-
-                    }
-                );
-
+            // Selecionar aluno para registro
+            const selectBtn = target.closest("[data-select-student]");
+            if (selectBtn) {
+                selectStudent(selectBtn.dataset.selectStudent);
+                return;
             }
-        );
 
-
-        getElement(
-            "atraso-modal-historico"
-        )?.addEventListener(
-            "click",
-            event => {
-
-                if (
-                    event.target.id ===
-                    "atraso-modal-historico"
-                ) {
-
-                    closeModal(
-                        "atraso-modal-historico"
-                    );
-
-                }
-
+            // Deletar Turma
+            const deleteTurmaBtn = target.closest("[data-delete-turma]");
+            if (deleteTurmaBtn) {
+                deleteTurma(deleteTurmaBtn.dataset.deleteTurma);
+                return;
             }
-        );
 
-    }
-
-
-    /* =====================================================
-       EVENT DELEGAÇÃO
-    ====================================================== */
-
-    function setupDelegatedEvents() {
-
-        document.addEventListener(
-            "click",
-            event => {
-
-                const studentButton =
-                    event.target.closest(
-                        "[data-select-student]"
-                    );
-
-
-                if (studentButton) {
-
-                    selectStudent(
-                        studentButton.dataset
-                            .selectStudent
-                    );
-
-                    return;
-                }
-
-
-                const historyButton =
-                    event.target.closest(
-                        "[data-open-history]"
-                    );
-
-
-                if (historyButton) {
-
-                    openStudentHistory(
-                        historyButton.dataset
-                            .openHistory
-                    );
-
-                    return;
-                }
-
-
-                const deleteUserButton =
-                    event.target.closest(
-                        "[data-delete-user]"
-                    );
-
-
-                if (deleteUserButton) {
-
-                    deleteUser(
-                        deleteUserButton.dataset
-                            .deleteUser
-                    );
-
-                    return;
-                }
-
-
-                const deleteTurmaButton =
-                    event.target.closest(
-                        "[data-delete-turma]"
-                    );
-
-
-                if (deleteTurmaButton) {
-
-                    deleteTurma(
-                        deleteTurmaButton.dataset
-                            .deleteTurma
-                    );
-
-                    return;
-                }
-
+            // Deletar Registro
+            const deleteRegistroBtn = target.closest("[data-delete-registro]");
+            if (deleteRegistroBtn) {
+                deleteRegistro(deleteRegistroBtn.dataset.deleteRegistro);
+                return;
             }
-        );
 
+        });
 
-        document.addEventListener(
-            "change",
-            event => {
+        document.addEventListener("change", (event) => {
 
-                const select =
-                    event.target.closest(
-                        "[data-aluno-status]"
-                    );
+            const target = event.target;
 
-
-                if (!select) {
-                    return;
-                }
-
-
+            // Mudar Situação do Aluno na Admin
+            if (target.dataset.alunoStatus) {
                 changeStudentStatus(
-
-                    select.dataset.turmaId,
-
-                    select.dataset.alunoStatus,
-
-                    select.value
-
+                    target.dataset.turmaId,
+                    target.dataset.alunoStatus,
+                    target.value
                 );
-
             }
-        );
+
+        });
+
+        // Form de Criar Turma
+        getElement("atraso-form-turma")?.addEventListener("submit", createTurma);
 
     }
-
-
-    /* =====================================================
-       TOAST
-    ====================================================== */
-
-    let toastTimer = null;
-
-
-    function showToast(
-        message,
-        type = ""
-    ) {
-
-        const toast =
-            getElement(
-                "atraso-toast"
-            );
-
-
-        if (!toast) {
-            return;
-        }
-
-
-        toast.textContent =
-            message;
-
-
-        toast.className =
-            "atraso-toast show";
-
-
-        if (type) {
-            toast.classList.add(type);
-        }
-
-
-        clearTimeout(
-            toastTimer
-        );
-
-
-        toastTimer =
-            setTimeout(
-                () => {
-
-                    toast.classList.remove(
-                        "show"
-                    );
-
-                },
-                3500
-            );
-
-    }
-
-
-    /* =====================================================
-       ESCAPE HTML
-       Protege conteúdo inserido no HTML
-    ====================================================== */
-
-    function escapeHtml(value) {
-
-        return String(value)
-            .replace(
-                /&/g,
-                "&amp;"
-            )
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
-
-    }
-
-
-    /* =====================================================
-       REFRESH GERAL
-    ====================================================== */
 
     function refreshAll() {
 
-        updateCurrentUserUI();
-
         populateTurmaSelects();
-
         renderRegistrationStudents();
-
-        if (
-            hasPermission("consultar")
-        ) {
-            renderConsultas();
-        }
-
-        if (
-            hasPermission("usuarios")
-        ) {
-            renderUsers();
-        }
-
-        if (
-            hasPermission("turmas")
-        ) {
-            renderTurmasAdmin();
-        }
+        renderConsultas();
+        renderTurmasAdmin();
 
     }
 
-
     /* =====================================================
-       FORMULÁRIOS
-    ====================================================== */
-
-    function setupForms() {
-
-        getElement(
-            "atraso-form-usuario"
-        )?.addEventListener(
-            "submit",
-            createUser
-        );
-
-
-        getElement(
-            "atraso-form-turma"
-        )?.addEventListener(
-            "submit",
-            createTurma
-        );
-
-
-        getElement(
-            "atraso-form-senha"
-        )?.addEventListener(
-            "submit",
-            changeOwnPassword
-        );
-
-    }
-
-
-    /* =====================================================
-       INICIALIZAÇÃO
+       INICIALIZAÇÃO DO MÓDULO
     ====================================================== */
 
     function init() {
 
-        /*
-         * Não inicializa duas vezes.
-         */
-
-        if (
-            window.__GESTAO_ATRASOS_INITIALIZED
-        ) {
-            return;
-        }
-
-        window.__GESTAO_ATRASOS_INITIALIZED =
-            true;
-
-
         loadStorage();
-
         initializeDefaultAdmin();
-
         restoreSession();
 
-        setupTabs();
+        // Expõe funções públicas no Namespace
+        window.GestaoAtrasos = {
+            setCurrentUser,
+            logout,
+            getState: () => ({ ...state }),
+            refresh: refreshAll
+        };
 
-        setupForms();
-
-        setupRegistration();
-
-        setupConsultas();
-
-        setupModals();
-
-        setupDelegatedEvents();
-
-        initializeDateTime();
-
-        populateTurmaSelects();
-
+        // Configurações da Interface
         updateCurrentUserUI();
-
         applyPermissions();
-
+        setupTabs();
+        setupRegistration();
+        setupConsultas();
+        setupGlobalEvents();
+        initializeDateTime();
         refreshAll();
-
-
-        /*
-         * Se o sistema principal ainda não possui
-         * autenticação integrada, usamos automaticamente
-         * o administrador padrão para permitir testes.
-         *
-         * Em produção, substitua esta parte pelo usuário
-         * real do seu sistema.
-         */
-
-        if (!state.currentUser) {
-
-            const admin =
-                state.users.find(
-                    user =>
-                        user.username ===
-                        "admin"
-                );
-
-
-            if (admin) {
-
-                setCurrentUser(
-                    admin
-                );
-
-            }
-
-        }
 
     }
 
-
-    /* =====================================================
-       API PÚBLICA
-       
-       Seu app.js pode chamar:
-       
-       GestaoAtrasos.init()
-       GestaoAtrasos.setCurrentUser(usuario)
-       GestaoAtrasos.logout()
-       GestaoAtrasos.refresh()
-       GestaoAtrasos.getState()
-    ====================================================== */
-
-    window.GestaoAtrasos = {
-
-        init,
-
-        setCurrentUser,
-
-        logout,
-
-        refresh:
-            refreshAll,
-
-        getState:
-            () => ({
-                users:
-                    state.users,
-
-                turmas:
-                    state.turmas,
-
-                registros:
-                    state.registros,
-
-                currentUser:
-                    state.currentUser
-            }),
-
-        hasPermission
-
-    };
-
-
-    /* =====================================================
-       AUTO INIT
-    ====================================================== */
-
-    if (
-        document.readyState ===
-        "loading"
-    ) {
-
-        document.addEventListener(
-            "DOMContentLoaded",
-            init
-        );
-
+    // Aguarda o carregamento do DOM para rodar
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
     } else {
-
         init();
-
     }
 
 })();
