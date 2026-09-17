@@ -1,824 +1,336 @@
-<!-- =========================================================
-     MÓDULO DE GESTÃO DE ATRASOS ESCOLARES
-     Prefixo dos IDs: atraso-
-========================================================= -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestão de Atrasos</title>
+  
+  <!-- Estilos (se tiver arquivo de CSS) -->
+  <link rel="stylesheet" href="style.css">
 
-<section id="atraso-module" class="atraso-module">
+  <!-- CDN do Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
-    <!-- =====================================================
-         CABEÇALHO
-    ====================================================== -->
+  <!-- =========================================================
+       MÓDULO DE GESTÃO DE ATRASOS ESCOLARES
+       Prefixo dos IDs: atraso-
+  ========================================================= -->
+  <section id="atraso-module" class="atraso-module">
+
+    <!-- CABEÇALHO -->
     <div class="atraso-header">
-        <div>
-            <span class="atraso-eyebrow">
-                GESTÃO ESCOLAR
-            </span>
+      <div>
+        <span class="atraso-eyebrow">GESTÃO ESCOLAR</span>
+        <h1>Gestão de Atrasos</h1>
+        <p>Controle, consulta e acompanhamento de atrasos escolares.</p>
+      </div>
 
-            <h1>
-                Gestão de Atrasos
-            </h1>
-
-            <p>
-                Controle, consulta e acompanhamento de atrasos escolares.
-            </p>
-        </div>
-
-        <div class="atraso-header-user">
-            <strong id="atraso-current-user-name">
-                Administrador
-            </strong>
-
-            <span id="atraso-current-user-role">
-                Administrador
-            </span>
-        </div>
+      <div class="atraso-header-user">
+        <strong id="atraso-current-user-name">Administrador</strong>
+        <span id="atraso-current-user-role">Administrador</span>
+      </div>
     </div>
 
-
-    <!-- =====================================================
-         NAVEGAÇÃO DO MÓDULO
-    ====================================================== -->
+    <!-- NAVEGAÇÃO DO MÓDULO -->
     <nav class="atraso-tabs" aria-label="Navegação de atrasos">
-
-        <button
-            type="button"
-            class="atraso-tab active"
-            data-atraso-tab="registrar"
-        >
-            Registrar atraso
-        </button>
-
-        <button
-            type="button"
-            class="atraso-tab"
-            data-atraso-tab="consultar"
-            data-role="pedagogico,direcao,administrador"
-        >
-            Consultas
-        </button>
-
-        <button
-            type="button"
-            class="atraso-tab"
-            data-atraso-tab="usuarios"
-            data-role="administrador"
-        >
-            Usuários
-        </button>
-
-        <button
-            type="button"
-            class="atraso-tab"
-            data-atraso-tab="turmas"
-            data-role="administrador"
-        >
-            Turmas e alunos
-        </button>
-
-        <button
-            type="button"
-            class="atraso-tab"
-            data-atraso-tab="configuracoes"
-        >
-            Configurações
-        </button>
-
+      <button type="button" class="atraso-tab active" data-atraso-tab="registrar">Registrar atraso</button>
+      <button type="button" class="atraso-tab" data-atraso-tab="consultar" data-role="pedagogico,direcao,administrador">Consultas</button>
+      <button type="button" class="atraso-tab" data-atraso-tab="usuarios" data-role="administrador">Usuários</button>
+      <button type="button" class="atraso-tab" data-atraso-tab="turmas" data-role="administrador">Turmas e alunos</button>
+      <button type="button" class="atraso-tab" data-atraso-tab="configuracoes">Configurações</button>
     </nav>
 
+    <!-- ABA: REGISTRAR ATRASO -->
+    <div id="atraso-tab-registrar" class="atraso-panel active" data-atraso-panel="registrar">
+      <div class="atraso-section-title">
+        <div>
+          <h2>Novo registro de atraso</h2>
+          <p>Registre a entrada tardia de um aluno matriculado.</p>
+        </div>
+      </div>
 
-    <!-- =====================================================
-         ABA: REGISTRAR ATRASO
-    ====================================================== -->
-    <div
-        id="atraso-tab-registrar"
-        class="atraso-panel active"
-        data-atraso-panel="registrar"
-    >
+      <form id="atraso-form-registro">
+        <div class="atraso-grid atraso-grid-2">
+          <div class="atraso-field">
+            <label for="atraso-data">Data</label>
+            <input type="date" id="atraso-data" required>
+          </div>
 
-        <div class="atraso-section-title">
-            <div>
-                <h2>Novo registro de atraso</h2>
-                <p>
-                    Registre a entrada tardia de um aluno matriculado.
-                </p>
-            </div>
+          <div class="atraso-field">
+            <label for="atraso-hora">Hora</label>
+            <input type="time" id="atraso-hora" required>
+          </div>
         </div>
 
-        <form id="atraso-form-registro">
+        <div class="atraso-grid atraso-grid-2">
+          <div class="atraso-field">
+            <label for="atraso-turma-registro">Turma</label>
+            <select id="atraso-turma-registro" required>
+              <option value="">Selecione uma turma</option>
+            </select>
+          </div>
 
-            <div class="atraso-grid atraso-grid-2">
+          <div class="atraso-field">
+            <label for="atraso-busca-aluno">Buscar aluno</label>
+            <input type="search" id="atraso-busca-aluno" placeholder="Nome ou número de chamada..." autocomplete="off">
+          </div>
+        </div>
 
-                <!-- Data -->
-                <div class="atraso-field">
-                    <label for="atraso-data">
-                        Data
-                    </label>
+        <div id="atraso-lista-alunos-registro" class="atraso-student-results">
+          <div class="atraso-empty">Selecione uma turma para visualizar os alunos.</div>
+        </div>
 
-                    <input
-                        type="date"
-                        id="atraso-data"
-                        required
-                    >
-                </div>
+        <input type="hidden" id="atraso-aluno-selecionado">
 
-                <!-- Hora -->
-                <div class="atraso-field">
-                    <label for="atraso-hora">
-                        Hora
-                    </label>
+        <div id="atraso-aluno-selecionado-card" class="atraso-selected-student hidden">
+          <div>
+            <span>Aluno selecionado</span>
+            <strong id="atraso-aluno-selecionado-nome">-</strong>
+          </div>
+          <div>
+            <span>Chamada</span>
+            <strong id="atraso-aluno-selecionado-numero">-</strong>
+          </div>
+          <button type="button" id="atraso-remover-aluno" class="atraso-btn atraso-btn-secondary">Alterar aluno</button>
+        </div>
 
-                    <input
-                        type="time"
-                        id="atraso-hora"
-                        required
-                    >
-                </div>
+        <div class="atraso-field atraso-checkbox-field">
+          <label class="atraso-checkbox">
+            <input type="checkbox" id="atraso-justificado">
+            <span>Este atraso é justificado</span>
+          </label>
+        </div>
 
-            </div>
-
-
-            <div class="atraso-grid atraso-grid-2">
-
-                <!-- Turma -->
-                <div class="atraso-field">
-                    <label for="atraso-turma-registro">
-                        Turma
-                    </label>
-
-                    <select
-                        id="atraso-turma-registro"
-                        required
-                    >
-                        <option value="">
-                            Selecione uma turma
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Busca -->
-                <div class="atraso-field">
-                    <label for="atraso-busca-aluno">
-                        Buscar aluno
-                    </label>
-
-                    <input
-                        type="search"
-                        id="atraso-busca-aluno"
-                        placeholder="Nome ou número de chamada..."
-                        autocomplete="off"
-                    >
-                </div>
-
-            </div>
-
-
-            <!-- Resultado dos alunos -->
-            <div
-                id="atraso-lista-alunos-registro"
-                class="atraso-student-results"
-            >
-                <div class="atraso-empty">
-                    Selecione uma turma para visualizar os alunos.
-                </div>
-            </div>
-
-
-            <!-- Aluno selecionado -->
-            <input
-                type="hidden"
-                id="atraso-aluno-selecionado"
-            >
-
-
-            <div
-                id="atraso-aluno-selecionado-card"
-                class="atraso-selected-student hidden"
-            >
-                <div>
-                    <span>Aluno selecionado</span>
-                    <strong id="atraso-aluno-selecionado-nome">
-                        -
-                    </strong>
-                </div>
-
-                <div>
-                    <span>Chamada</span>
-                    <strong id="atraso-aluno-selecionado-numero">
-                        -
-                    </strong>
-                </div>
-
-                <button
-                    type="button"
-                    id="atraso-remover-aluno"
-                    class="atraso-btn atraso-btn-secondary"
-                >
-                    Alterar aluno
-                </button>
-            </div>
-
-
-            <!-- Justificativa -->
-            <div class="atraso-field atraso-checkbox-field">
-
-                <label class="atraso-checkbox">
-                    <input
-                        type="checkbox"
-                        id="atraso-justificado"
-                    >
-
-                    <span>
-                        Este atraso é justificado
-                    </span>
-                </label>
-
-            </div>
-
-
-            <div class="atraso-form-actions">
-
-                <button
-                    type="reset"
-                    class="atraso-btn atraso-btn-secondary"
-                    id="atraso-btn-limpar"
-                >
-                    Limpar
-                </button>
-
-                <button
-                    type="submit"
-                    class="atraso-btn atraso-btn-primary"
-                >
-                    Registrar atraso
-                </button>
-
-            </div>
-
-        </form>
-
+        <div class="atraso-form-actions">
+          <button type="reset" class="atraso-btn atraso-btn-secondary" id="atraso-btn-limpar">Limpar</button>
+          <button type="submit" class="atraso-btn atraso-btn-primary">Registrar atraso</button>
+        </div>
+      </form>
     </div>
 
-
-    <!-- =====================================================
-         ABA: CONSULTAS
-    ====================================================== -->
-    <div
-        id="atraso-tab-consultar"
-        class="atraso-panel"
-        data-atraso-panel="consultar"
-    >
-
-        <div class="atraso-section-title">
-            <div>
-                <h2>Consultas e relatórios</h2>
-                <p>
-                    Consulte registros por turma, aluno ou ID.
-                </p>
-            </div>
-
-            <button
-                type="button"
-                id="atraso-exportar"
-                class="atraso-btn atraso-btn-primary"
-            >
-                Gerar Planilha de Atrasos
-            </button>
+    <!-- ABA: CONSULTAS -->
+    <div id="atraso-tab-consultar" class="atraso-panel" data-atraso-panel="consultar">
+      <div class="atraso-section-title">
+        <div>
+          <h2>Consultas e relatórios</h2>
+          <p>Consulte registros por turma, aluno ou ID.</p>
         </div>
+        <button type="button" id="atraso-exportar" class="atraso-btn atraso-btn-primary">Gerar Planilha de Atrasos</button>
+      </div>
 
-
-        <!-- Busca por ID -->
-        <div class="atraso-card atraso-search-card">
-
-            <div class="atraso-field">
-                <label for="atraso-busca-id">
-                    Buscar registro pelo ID
-                </label>
-
-                <div class="atraso-inline-search">
-
-                    <input
-                        type="text"
-                        id="atraso-busca-id"
-                        maxlength="5"
-                        inputmode="numeric"
-                        placeholder="Ex.: 00050"
-                    >
-
-                    <button
-                        type="button"
-                        id="atraso-btn-buscar-id"
-                        class="atraso-btn atraso-btn-primary"
-                    >
-                        Buscar
-                    </button>
-
-                </div>
-            </div>
-
-            <div id="atraso-resultado-id"></div>
-
+      <div class="atraso-card atraso-search-card">
+        <div class="atraso-field">
+          <label for="atraso-busca-id">Buscar registro pelo ID</label>
+          <div class="atraso-inline-search">
+            <input type="text" id="atraso-busca-id" maxlength="5" inputmode="numeric" placeholder="Ex.: 00050">
+            <button type="button" id="atraso-btn-buscar-id" class="atraso-btn atraso-btn-primary">Buscar</button>
+          </div>
         </div>
+        <div id="atraso-resultado-id"></div>
+      </div>
 
-
-        <!-- Filtro -->
-        <div class="atraso-card">
-
-            <div class="atraso-grid atraso-grid-2">
-
-                <div class="atraso-field">
-
-                    <label for="atraso-filtro-turma">
-                        Turma
-                    </label>
-
-                    <select id="atraso-filtro-turma">
-                        <option value="">
-                            Todas as turmas
-                        </option>
-                    </select>
-
-                </div>
-
-                <div class="atraso-field">
-
-                    <label for="atraso-filtro-aluno">
-                        Buscar aluno
-                    </label>
-
-                    <input
-                        type="search"
-                        id="atraso-filtro-aluno"
-                        placeholder="Nome ou número..."
-                    >
-
-                </div>
-
-            </div>
-
+      <div class="atraso-card">
+        <div class="atraso-grid atraso-grid-2">
+          <div class="atraso-field">
+            <label for="atraso-filtro-turma">Turma</label>
+            <select id="atraso-filtro-turma">
+              <option value="">Todas as turmas</option>
+            </select>
+          </div>
+          <div class="atraso-field">
+            <label for="atraso-filtro-aluno">Buscar aluno</label>
+            <input type="search" id="atraso-filtro-aluno" placeholder="Nome ou número...">
+          </div>
         </div>
+      </div>
 
-
-        <!-- Indicadores -->
-        <div class="atraso-stats">
-
-            <div class="atraso-stat-card">
-                <span>Total de registros</span>
-                <strong id="atraso-stat-total">
-                    0
-                </strong>
-            </div>
-
-            <div class="atraso-stat-card">
-                <span>Alunos com atrasos</span>
-                <strong id="atraso-stat-alunos">
-                    0
-                </strong>
-            </div>
-
-            <div class="atraso-stat-card">
-                <span>Mais de 3 atrasos</span>
-                <strong id="atraso-stat-alertas">
-                    0
-                </strong>
-            </div>
-
+      <div class="atraso-stats">
+        <div class="atraso-stat-card">
+          <span>Total de registros</span>
+          <strong id="atraso-stat-total">0</strong>
         </div>
-
-
-        <!-- Tabela -->
-        <div class="atraso-card atraso-table-card">
-
-            <div class="atraso-table-wrapper">
-
-                <table class="atraso-table">
-
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Data</th>
-                            <th>Hora</th>
-                            <th>Aluno</th>
-                            <th>Turma</th>
-                            <th>Chamada</th>
-                            <th>Status</th>
-                            <th>Registrado por</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-
-                    <tbody id="atraso-tbody-consultas">
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div
-                id="atraso-consulta-vazia"
-                class="atraso-empty hidden"
-            >
-                Nenhum registro encontrado.
-            </div>
-
+        <div class="atraso-stat-card">
+          <span>Alunos com atrasos</span>
+          <strong id="atraso-stat-alunos">0</strong>
         </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         ABA: USUÁRIOS
-    ====================================================== -->
-    <div
-        id="atraso-tab-usuarios"
-        class="atraso-panel"
-        data-atraso-panel="usuarios"
-    >
-
-        <div class="atraso-section-title">
-
-            <div>
-                <h2>Gestão de usuários</h2>
-                <p>
-                    Área exclusiva do Administrador.
-                </p>
-            </div>
-
+        <div class="atraso-stat-card">
+          <span>Mais de 3 atrasos</span>
+          <strong id="atraso-stat-alertas">0</strong>
         </div>
+      </div>
 
-
-        <div class="atraso-card">
-
-            <h3>Novo usuário</h3>
-
-            <form id="atraso-form-usuario">
-
-                <div class="atraso-grid atraso-grid-2">
-
-                    <div class="atraso-field">
-
-                        <label for="atraso-usuario-nome">
-                            Nome completo
-                        </label>
-
-                        <input
-                            type="text"
-                            id="atraso-usuario-nome"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="atraso-field">
-
-                        <label for="atraso-usuario-login">
-                            Nome de usuário
-                        </label>
-
-                        <input
-                            type="text"
-                            id="atraso-usuario-login"
-                            placeholder="Ex.: Maria.Silva"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="atraso-field">
-
-                        <label for="atraso-usuario-senha">
-                            Senha inicial
-                        </label>
-
-                        <input
-                            type="password"
-                            id="atraso-usuario-senha"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="atraso-field">
-
-                        <label for="atraso-usuario-cargo">
-                            Cargo / Função
-                        </label>
-
-                        <select
-                            id="atraso-usuario-cargo"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione
-                            </option>
-
-                            <option value="monitor">
-                                Monitor
-                            </option>
-
-                            <option value="pedagogico">
-                                Pedagógico
-                            </option>
-
-                            <option value="direcao">
-                                Direção
-                            </option>
-
-                            <option value="administrador">
-                                Administrador
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="atraso-btn atraso-btn-primary"
-                >
-                    Criar usuário
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <div class="atraso-card">
-
-            <h3>Usuários cadastrados</h3>
-
-            <div
-                id="atraso-lista-usuarios"
-                class="atraso-user-list"
-            ></div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         ABA: TURMAS E ALUNOS
-    ====================================================== -->
-    <div
-        id="atraso-tab-turmas"
-        class="atraso-panel"
-        data-atraso-panel="turmas"
-    >
-
-        <div class="atraso-section-title">
-
-            <div>
-                <h2>Turmas e alunos</h2>
-                <p>
-                    Cadastre turmas e alunos em lote.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="atraso-card">
-
-            <h3>Criar turma</h3>
-
-            <form id="atraso-form-turma">
-
-                <div class="atraso-grid atraso-grid-2">
-
-                    <div class="atraso-field">
-
-                        <label for="atraso-turma-nome">
-                            Nome da turma
-                        </label>
-
-                        <input
-                            type="text"
-                            id="atraso-turma-nome"
-                            placeholder="Ex.: 6º A"
-                            required
-                        >
-
-                    </div>
-
-                </div>
-
-
-                <div class="atraso-field">
-
-                    <label for="atraso-alunos-lote">
-                        Alunos — um nome por linha
-                    </label>
-
-                    <textarea
-                        id="atraso-alunos-lote"
-                        rows="10"
-                        placeholder="João da Silva
-Maria Oliveira
-Pedro Santos
-Ana Souza"
-                    ></textarea>
-
-                    <small>
-                        Os nomes serão ordenados alfabeticamente e a
-                        numeração de chamada será criada automaticamente.
-                    </small>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="atraso-btn atraso-btn-primary"
-                >
-                    Criar turma e cadastrar alunos
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <div class="atraso-card">
-
-            <h3>Turmas cadastradas</h3>
-
-            <div id="atraso-lista-turmas"></div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =====================================================
-         ABA: CONFIGURAÇÕES
-    ====================================================== -->
-    <div
-        id="atraso-tab-configuracoes"
-        class="atraso-panel"
-        data-atraso-panel="configuracoes"
-    >
-
-        <div class="atraso-section-title">
-
-            <div>
-                <h2>Minha conta</h2>
-                <p>
-                    Altere somente a senha da sua própria conta.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="atraso-card atraso-config-card">
-
-            <h3>Alterar senha</h3>
-
-            <form id="atraso-form-senha">
-
-                <div class="atraso-field">
-
-                    <label for="atraso-senha-atual">
-                        Senha atual
-                    </label>
-
-                    <input
-                        type="password"
-                        id="atraso-senha-atual"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="atraso-field">
-
-                    <label for="atraso-nova-senha">
-                        Nova senha
-                    </label>
-
-                    <input
-                        type="password"
-                        id="atraso-nova-senha"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="atraso-field">
-
-                    <label for="atraso-confirmar-senha">
-                        Confirmar nova senha
-                    </label>
-
-                    <input
-                        type="password"
-                        id="atraso-confirmar-senha"
-                        required
-                    >
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    class="atraso-btn atraso-btn-primary"
-                >
-                    Atualizar senha
-                </button>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-</section>
-
-
-<!-- =========================================================
-     MODAL: HISTÓRICO DO ALUNO
-========================================================= -->
-
-<div
-    id="atraso-modal-historico"
-    class="atraso-modal"
-    aria-hidden="true"
->
-
-    <div class="atraso-modal-content">
-
-        <div class="atraso-modal-header">
-
-            <div>
-
-                <span>Histórico individual</span>
-
-                <h2 id="atraso-modal-aluno-nome">
-                    -
-                </h2>
-
-            </div>
-
-            <button
-                type="button"
-                class="atraso-modal-close"
-                data-atraso-close="historico"
-                aria-label="Fechar"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div id="atraso-modal-aluno-info"></div>
-
-
+      <div class="atraso-card atraso-table-card">
         <div class="atraso-table-wrapper">
-
-            <table class="atraso-table">
-
-                <thead>
-
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Status</th>
-                        <th>Registrado por</th>
-                    </tr>
-
-                </thead>
-
-                <tbody id="atraso-modal-historico-body"></tbody>
-
-            </table>
-
+          <table class="atraso-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Aluno</th>
+                <th>Turma</th>
+                <th>Chamada</th>
+                <th>Status</th>
+                <th>Registrado por</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="atraso-tbody-consultas"></tbody>
+          </table>
         </div>
-
+        <div id="atraso-consulta-vazia" class="atraso-empty hidden">Nenhum registro encontrado.</div>
+      </div>
     </div>
 
-</div>
+    <!-- ABA: USUÁRIOS -->
+    <div id="atraso-tab-usuarios" class="atraso-panel" data-atraso-panel="usuarios">
+      <div class="atraso-section-title">
+        <div>
+          <h2>Gestão de usuários</h2>
+          <p>Área exclusiva do Administrador.</p>
+        </div>
+      </div>
 
+      <div class="atraso-card">
+        <h3>Novo usuário</h3>
+        <form id="atraso-form-usuario">
+          <div class="atraso-grid atraso-grid-2">
+            <div class="atraso-field">
+              <label for="atraso-usuario-nome">Nome completo</label>
+              <input type="text" id="atraso-usuario-nome" required>
+            </div>
+            <div class="atraso-field">
+              <label for="atraso-usuario-login">Nome de usuário</label>
+              <input type="text" id="atraso-usuario-login" placeholder="Ex.: Maria.Silva" required>
+            </div>
+            <div class="atraso-field">
+              <label for="atraso-usuario-senha">Senha inicial</label>
+              <input type="password" id="atraso-usuario-senha" required>
+            </div>
+            <div class="atraso-field">
+              <label for="atraso-usuario-cargo">Cargo / Função</label>
+              <select id="atraso-usuario-cargo" required>
+                <option value="">Selecione</option>
+                <option value="monitor">Monitor</option>
+                <option value="pedagogico">Pedagógico</option>
+                <option value="direcao">Direção</option>
+                <option value="administrador">Administrador</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="atraso-btn atraso-btn-primary">Criar usuário</button>
+        </form>
+      </div>
 
-<!-- =========================================================
-     TOAST / NOTIFICAÇÕES
-========================================================= -->
+      <div class="atraso-card">
+        <h3>Usuários cadastrados</h3>
+        <div id="atraso-lista-usuarios" class="atraso-user-list"></div>
+      </div>
+    </div>
 
-<div
-    id="atraso-toast"
-    class="atraso-toast"
-    role="status"
-    aria-live="polite"
-></div>
+    <!-- ABA: TURMAS E ALUNOS -->
+    <div id="atraso-tab-turmas" class="atraso-panel" data-atraso-panel="turmas">
+      <div class="atraso-section-title">
+        <div>
+          <h2>Turmas e alunos</h2>
+          <p>Cadastre turmas e alunos em lote.</p>
+        </div>
+      </div>
+
+      <div class="atraso-card">
+        <h3>Criar turma</h3>
+        <form id="atraso-form-turma">
+          <div class="atraso-grid atraso-grid-2">
+            <div class="atraso-field">
+              <label for="atraso-turma-nome">Nome da turma</label>
+              <input type="text" id="atraso-turma-nome" placeholder="Ex.: 6º A" required>
+            </div>
+          </div>
+
+          <div class="atraso-field">
+            <label for="atraso-alunos-lote">Alunos — um nome por linha</label>
+            <textarea id="atraso-alunos-lote" rows="10" placeholder="João da Silva&#10;Maria Oliveira&#10;Pedro Santos&#10;Ana Souza"></textarea>
+            <small>Os nomes serão ordenados alfabeticamente e a numeração de chamada será criada automaticamente.</small>
+          </div>
+
+          <button type="submit" class="atraso-btn atraso-btn-primary">Criar turma e cadastrar alunos</button>
+        </form>
+      </div>
+
+      <div class="atraso-card">
+        <h3>Turmas cadastradas</h3>
+        <div id="atraso-lista-turmas"></div>
+      </div>
+    </div>
+
+    <!-- ABA: CONFIGURAÇÕES -->
+    <div id="atraso-tab-configuracoes" class="atraso-panel" data-atraso-panel="configuracoes">
+      <div class="atraso-section-title">
+        <div>
+          <h2>Minha conta</h2>
+          <p>Altere somente a senha da sua própria conta.</p>
+        </div>
+      </div>
+
+      <div class="atraso-card atraso-config-card">
+        <h3>Alterar senha</h3>
+        <form id="atraso-form-senha">
+          <div class="atraso-field">
+            <label for="atraso-senha-atual">Senha atual</label>
+            <input type="password" id="atraso-senha-atual" required>
+          </div>
+          <div class="atraso-field">
+            <label for="atraso-nova-senha">Nova senha</label>
+            <input type="password" id="atraso-nova-senha" required>
+          </div>
+          <div class="atraso-field">
+            <label for="atraso-confirmar-senha">Confirmar nova senha</label>
+            <input type="password" id="atraso-confirmar-senha" required>
+          </div>
+          <button type="submit" class="atraso-btn atraso-btn-primary">Atualizar senha</button>
+        </form>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- MODAL: HISTÓRICO DO ALUNO -->
+  <div id="atraso-modal-historico" class="atraso-modal" aria-hidden="true">
+    <div class="atraso-modal-content">
+      <div class="atraso-modal-header">
+        <div>
+          <span>Histórico individual</span>
+          <h2 id="atraso-modal-aluno-nome">-</h2>
+        </div>
+        <button type="button" class="atraso-modal-close" data-atraso-close="historico" aria-label="Fechar">×</button>
+      </div>
+      <div id="atraso-modal-aluno-info"></div>
+      <div class="atraso-table-wrapper">
+        <table class="atraso-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th>Status</th>
+              <th>Registrado por</th>
+            </tr>
+          </thead>
+          <tbody id="atraso-modal-historico-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST / NOTIFICAÇÕES -->
+  <div id="atraso-toast" class="atraso-toast" role="status" aria-live="polite"></div>
+
+  <!-- SheetJS para exportação de planilhas Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Seu arquivo de lógica da aplicação em JS -->
+  <script src="app.js"></script>
+</body>
+</html>
